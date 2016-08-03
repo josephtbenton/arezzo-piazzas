@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>title</title>
+    <link rel="stylesheet" href="css/index.css" type="text/css">
+</head>
+
+<body>
+    <script src="js/bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
+    <script src="js/jquery-throttle-debounce/jquery.ba-throttle-debounce.js" type="text/javascript"></script>
+    <script src="js/paver/src/js/jquery.paver.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="js/paver/dist/css/paver.min.css" media="screen" title="no title" charset="utf-8">
+    <h1>ciao</h1>
+    <div class="panorama">
+        <img src="static/vineyard.jpg" alt="" title="" />
+    </div>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $(function() {
+                alert('starting paver');
+                $('div.panorama').paver();
+            });
+        });
+    </script>
+</body>
+
+</html>

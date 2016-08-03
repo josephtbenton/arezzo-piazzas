@@ -1,0 +1,558 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<title>Usage Notes &middot; Paver, a jQuery plugin for easy panorama viewing</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.0/normalize.min.css" media="all" rel="stylesheet" />
+	<link href="https://fonts.googleapis.com/css?family=PT+Serif:400italic" rel="stylesheet" type="text/css">
+	<link type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/prism/0.0.1/prism.min.css" media="all" rel="stylesheet" />
+	<link rel="stylesheet" href="./dist/css/style.min.css" />
+	<link rel="stylesheet" href="../dist/css/paver.min.css" />
+
+	<link rel="author" href="https://plus.google.com/+TerryMun/"></link>
+	<script>
+		(function(i,s,o,g,r,a,m){i["GoogleAnalyticsObject"]=r;i[r]=i[r]||function(){
+			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,"script","https://www.google-analytics.com/analytics.js","ga");
+		ga("create", "UA-46830269-1", "terrymun.github.io");
+		ga("send", "pageview");
+	</script>
+
+</head>
+<body>
+	<header>
+		<div>
+			<h1>
+				<a href="index.html" title="Paver Home">
+					<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="914.814px" height="364.198px" viewBox="0 0 914.814 364.198" enable-background="new 0 0 914.814 364.198" preserveAspectRatio="xMidYMid meet">
+						<g>
+							<path id="background" d="M895.21,346.815c-290.513-36.7-584.488-36.7-875,0c0-110.333,0-220.667,0-331
+									c290.512,36.7,584.488,36.7,875,0C895.21,126.148,895.21,236.482,895.21,346.815z"/>
+							<path class="logo-scroller" id="logo-scroller-track" d="M73.037,316.497
+								c254.668-23.971,511.668-24.064,766.354-0.281"/>
+							<path class="logo-scroller" id="logo-scroller-handler" d="M73.037,316.497
+								c254.668-23.971,511.668-24.064,766.354-0.281"/>
+							<text transform="matrix(1 0 0 1 266.9116 221.6665)"><tspan x="0" y="0" font-size="144">Pa</tspan><tspan x="176.111" y="0" font-size="144">ver</tspan></text>
+						</g>
+					</svg>
+				</a>
+			</h1>
+			<span class="byline">Replicating the photo viewer/panner seen on the experimental Facebook Pages app</span>
+		</div>
+		<nav>
+			<ul>
+				<li><a href="index.html" title="Main">Main</a></li>
+				<li class="active"><a href="usage-notes.html" title="Usage notes">Usage Notes</a></li>
+				<li><a href="advanced-usage.html" title="Advaned usage">Advanced Usage</a></li>
+				<li><a href="custom-triggers-events.html" title="Custom triggers &amp; events">Custom Triggers &amp; Events</a></li>
+			</ul>
+		</nav>
+	</header>
+
+	<main id="content">
+		<section>
+			<h2 id="configuration-options">Configuration options</h2>
+			<p>The following table is an alphabetical list of all accepted options for configuring your Paver instance. These options can either be declared in an object that is passed into the <code>.paver()</code> method, or as a HTML5 <code>data-</code> attribute.</p>
+			<table id="configuration-options__table">
+				<thead>
+					<tr>
+						<td>Option</td>
+						<td>HTML5 data</td>
+						<td>Type</td>
+						<td>Default</td>
+						<td>Description</td>
+					</tr>
+				</thead>
+				<tbody>
+					<tr id="config__cursor-throttle">
+						<th>cursorThrottle</th>
+						<td>data-cursor-throttle</td>
+						<td>Numeric</td>
+						<td>1000/60</td>
+						<td><p>This throttles to the listening of the <code>mousemove</code> events, to prevert jittery panning actions of Paver-enabled panoramas. Defaults to 60fps.</p></td>
+					</tr>
+					<tr id="config__gyroscope-throttle">
+						<th>gyroscopeThrottle</th>
+						<td>data-gyroscope-throttle</td>
+						<td>Numeric</td>
+						<td>1000/60</td>
+						<td><p>This throttles to the listening of the <code>deviceorientation</code> events, to prevert jittery panning actions of Paver-enabled panoramas. Defaults to 60fps.</p></td>
+					</tr>
+					<tr id="config__failure-message">
+						<th>failureMessage</th>
+						<td>data-failure-message</td>
+						<td>Text</td>
+						<td>Scroll left/right to pan through panorama.</td>
+						<td><p>The failure message to display when Paver is not initialized, such that users are not left in the dark in how to navigate/pan through the panorama. This message will appear in mobile devices with no gyroscopic data or no <code>DeviceOrientationEvent</code> support.</p><p class="user-message note">Will only work when <code><a href="#config__graceful-failure" title="gracefulFailure">gracefulFailure</a></code> is set to <code>true</code>.</p></td>
+					</tr>
+					<tr id="config__failure-message-insert">
+						<th>failureMessageInsert</th>
+						<td>data-failure-message-insert</td>
+						<td>Text</td>
+						<td>after</td>
+						<td><p>The DOM location where the failure message will be inserted. This follows the jQuery convention of inserting new DOM nodes&mdash;accepted values are <code>before</code>, <code>after</code>, <code>append</code> and <code>prepend</code>. If the value of this option is not one of the four specified, it will fallback to the default value of <em>after</em>.</p><p class="user-message note">Will only work when <code><a href="#config__graceful-failure" title="gracefulFailure">gracefulFailure</a></code> is set to <code>true</code>.</p></td>
+					</tr>
+					<tr id="config__graceful-failure">
+						<th>gracefulFailure</th>
+						<td>data-graceful-failure</td>
+						<td>Boolean</td>
+						<td>true</td>
+						<td>Allows the display of failure message (via <code><a href="#config__failure-message" title="failureMessage">failureMessage</a></code>) at the desired DOM insertion location (via <code><a href="#config__failure-message-insert" title="failureMessageInsert">failureMessageInsert</a></code>).</td>
+					</tr>
+					<tr id="config__grain">
+						<th>grain</th>
+						<td>data-grain</td>
+						<td>Numeric (integer)</td>
+						<td>3</td>
+						<td>Determines to how many decimal places, via <code>.toFixed()</code>, the relative position of the cursor to the parent container of the panorama, or the ratio of device tilt, should be computed to. Higher values may lead to over-sensitivity, lower values may lead to jitter effect. The minimum value is 1, and will be coerced by the plugin if the user-supplied value is less than or equals to 0.</td>
+					</tr>
+					<tr id="config__meta">
+						<th>meta</th>
+						<td>data-meta</td>
+						<td>Boolean</td>
+						<td>false</td>
+						<td>Determines whether a metadata overlay should be displayed. When enabled, the plugin will retrieve the value(s) of the <code>title</code> and/or <code>alt</code>, if declared (but by the way, the <code>alt</code> is <em>always required</em>), and injects them into the Paver container:<pre><code>&lt;div class=&quot;paver__meta&quot;&gt;
+    &lt;span class=&quot;paver__title&quot;&gt;Title&lt;/span&gt;
+    &lt;span class=&quot;paver__desc&quot;&gt;Description&lt;/span&gt;
+&lt;/div&gt;</code></pre></td>
+					</tr>
+					<tr id="config__minimum-overflow">
+						<th>minimumOverflow</th>
+						<td>data-minimum-overflow</td>
+						<td>Numeric (integer)</td>
+						<td>200</td>
+						<td><p>The excess width the panorama must have, in pixels, before Paver kicks in. In other words, this option allows the panorama's computed width to exceed that of its parent container by <code>n</code> amount of pixels before we allow for panning. Nobody wants a panorama that can barely be panned, which could almost fit in the whole screen, right?</p><p>This value should be determined on a case-by-case basis, depending on how wide your panorama container is, but with repeated testing I find <code>200</code> to be a good in-between value.</p></td>
+					</tr>
+					<tr id="config__mouse-smoothing-function">
+						<th>mouseSmoothingFunction</th>
+						<td>data-mouse-smoothing-function</td>
+						<td>String or Function</td>
+						<td>linear</td>
+						<td><p>Determines how tilting movement can be translated and smoothed into a panning action. Default option is <code><a href="#smoothing-function__linear">linear</a></code>, but you may choose between <code><a href="#smoothing-function__gaussian">gaussian</a></code>, <code><a href="#smoothing-function__cosine">cosine</a></code> and <code><a href="#smoothing-function__tangent">tangent</a></code>. For details of each smoothing function, refer to <a href="#smoothing-functions" title="Smoothing Functions">smoothing functions</a>.</p><p>If you are declaring a function, refer to <a href="advanced-usage.html#custom-smoothing-functions">custom smoothing functions</a> for instructions on how to create one yourself.</p></td>
+					</tr>
+					<tr id="config__panning-throttle">
+						<th>panningThrottle</th>
+						<td>data-panning-throttle</td>
+						<td>Numeric (ms)</td>
+						<td>125</td>
+						<td><p class="user-message warning">This parameter is deprecated in favour of separate throttling values for mouse-based and gyroscope-based events. See: <code><a href="#config__cursor-throttle">cursorThrottle</a></code> and <code><a href="#config__gyroscope-throttle">gyroscopeThrottle</a></code> respectively.</p><p>This throttles to the listening of the <code>deviceorientation</code> and/or <code>mousemove</code> events, to prevert jittery panning actions of Paver-enabled panoramas. This is partially due to the high sampling rate of gyroscoping data. However, increasing this number (longer durations) will lead to jerky panning movements due to low resolution of device tilt available to Paver.</p>
+						<p class="user-message note">When updating this value, remember to update the <code>transition-duration</code> property in <code>paver.scss</code> (and recompile it) or <code>paver.css</code>, such that it is equivalent to the <code>panningThrottle</code> value.</p></td>
+					</tr>
+					<tr id="config__resize-throttle">
+						<th>resizeThrottle</th>
+						<td>data-resize-throttle</td>
+						<td>Numeric (ms)</td>
+						<td>500</td>
+						<td><p>Governs how often the window <code>resize</code> event should be fired. Due to intensive computation requirements of each Paver instance, the window resize event has been highly throttled. Afterall, it is the <em>final</em> dimensions of the viewport that matters, not that of during transitional resizing events.</p></td>
+					</tr>
+					<tr id="config__responsive">
+						<th>responsive</th>
+						<td>data-responsive</td>
+						<td>Boolean</td>
+						<td>true</td>
+						<td>Toggles the responsiveness of the panorama image, in the event that the viewport is too wide such that panning is not required. If enable, Paver will attempt to resize the image to fill the dimensions of the image's parent.</td>
+					</tr>
+					<tr id="config__start-position">
+						<th>startPosition</th>
+						<td>data-start-position</td>
+						<td>Numeric (ratio)</td>
+						<td>0.5</td>
+						<td><p>Determines the start position of the panorama when Paver is enabled. By default, this will horizontally center the panorama. The ratio extends from 0 through 1, from the left to the right of the panorama. For example, if you want the panorama to be at the leftmost position upon initialization, use <code>0</code>.</p><p>Since this value must be a ratio, Paver will coerce the value to fall within this range, i.e. numeric values that fall beyond the range will be forced to 0 or 1.</p>
+						<p class="user-message note">This option will be nullified when gyroscopic data is in use.</p></td>
+					</tr>
+					<tr id="config__tilt">
+						<th>tilt</th>
+						<td>data-tilt</td>
+						<td>Boolean</td>
+						<td>true</td>
+						<td><p class="user-message reminder"><strong>Experimental feature that depends on device support.</strong></p><p>When enabled, this option allows Paver to tap to the gyroscopic data available from the device. It translates tilting (front-back and left-right) into panning actions.</p></td>
+					</tr>
+					<tr id="config__tilt-sensitivity">
+						<th>tiltSensitivity</th>
+						<td>data-tilt-sensitivity</td>
+						<td>Numeric (degrees)</td>
+						<td>0.2</td>
+						<td><p class="user-message reminder"><strong>Experimental feature that depends on device support.</strong></p><p>The number of degrees that has to be tilted in between measurements for the scroller to be display on a gyroscope-equipped device. The larger the value, the more rapid tilting action has to be initiated before the scoller appears on a gyroscope-equipped device.</p></td>
+					</tr>
+					<tr id="config__tilt-scroller-persistence">
+						<th>tiltScrollerPersistence</th>
+						<td>data-tilt-scroller-persistence</td>
+						<td>Numeric (ms)</td>
+						<td>500</td>
+						<td><p class="user-message reminder"><strong>Experimental feature that depends on device support.</strong></p><p>Determines the duration, in milliseconds, of which the scroller overlay will appear when the device is being tilted beyond the tiltThreshold (which is device orientation-sensitive). This rule is enforced using the <code>window.setTimeout()</code> function.</p><p class="user-message note">When this value is set to <code>0</code>, the scroller will <em>always</em> appear over the panorama on devices that provide gyroscopic data.</p></td>
+					</tr>
+					<tr id="config__tilt-smoothing-function">
+						<th>tiltSmoothingFunction</th>
+						<td>data-tilt-smoothing-function</td>
+						<td>String or Function</td>
+						<td>gaussian</td>
+						<td><p class="user-message reminder"><strong>Experimental feature that depends on device support.</strong></p><p>Determines how tilting movement can be translated and smoothed into a panning action. Default option is <code><a href="#smoothing-function__gaussian">gaussian</a></code>, but you may choose between <code><a href="#smoothing-function__linear">linear</a></code>, <code><a href="#smoothing-function__cosine">cosine</a></code> and <code><a href="#smoothing-function__tangent">tangent</a></code>. For details of each smoothing function, refer to <a href="#smoothing-functions" title="Smoothing Functions">smoothing functions</a>.</p><p>If you are declaring a function, refer to <a href="advanced-usage.html#custom-smoothing-functions">custom smoothing functions</a> for instructions on how to create one yourself.</p></td>
+					</tr>
+					<tr id="config__tilt-threshold-landscape">
+						<th>tiltThresholdLandscape</th>
+						<td>data-tilt-threshold-landscape</td>
+						<td>Numeric (degrees)</td>
+						<td>24</td>
+						<td><p class="user-message reminder"><strong>Experimental feature that depends on device support.</strong></p><p>The number of degrees from the resting start position where the panning will end, when the device orientation is in landscape mode. For example, with the default value of <code>24</code>, the user simply has to tilt left/right by 24 degrees to reach the left/rightmost edges of the panorama in landscape mode.</p><p>This value will be coerced within the range of 0 to 180 degrees.</p></td>
+					</tr>
+					<tr id="config__tilt-threshold-portrait">
+						<th>tiltThresholdPortrait</th>
+						<td>data-tilt-threshold-portrait</td>
+						<td>Numeric (degrees)</td>
+						<td>12</td>
+						<td><p class="user-message reminder"><strong>Experimental feature that depends on device support.</strong></p><p>The number of degrees from the resting start position where the panning will end, when the device orientation is in portrait mode. For example, with the default value of <code>12</code>, the user simply has to tilt left/right by 12 degrees to reach the left/rightmost edges of the panorama in portrait mode.</p><p>This value will be coerced within the range of 0 to 180 degrees.</p></td>
+					</tr>
+				</tbody>
+			</table>
+
+			<h3 id="smoothing-functions">Smoothing Functions</h3>
+			<p class="user-message note">As of v1.2.0, you can now declare your own smoothing functions. Please refer to <a href="advanced-usage.html#custom-smoothing-functions" title="Advanced Usage&mdash;Custom Smoothing Functions">advanced usage for an example</a>.</p>
+			<p>Paver comes with four smoothing functions that converts cursor coordinates and/or device tilt into CSS transforms that will pan your panoramas. Note that these functions accept variables mapped to the range of $[-1,1]$, where 0 represents the center of the panorama, and will transform outputs mapped to the range of $[0,1]$, where 0.5 represents the center of the panorama. The reasoning behind this is that device tilt can take on negative and positive values&mdash;cursor coordinates are simply mapped to $[-1,1]$ prior to passing them into smoothing functions.</p>
+			<p>Note: in mathematical terms, square brackets is the representation of the concept "<em>inclusive of</em>", i.e. $[-1,1]$ is inclusive of $-1$ and $1$, or $-1 \le n \le 1$.</p>
+			<ul id="smoothing-functions__list">
+				<li>
+					<h4 id="smoothing-function__linear">Linear</h4>
+					<div class="graph">
+						<div class="graph-plot" id="smoothing-function-plot__linear"></div>
+						<div class="graph-equation">
+							$$
+							\begin{align}
+							y &= f(x) \\ &= \frac{\left(x+1\right)}{2}
+							\end{align}
+							$$
+							$$\textrm{where } x = [-1,1] \textrm{ and } f(x) = [0,1]$$
+						</div>
+					</div>
+					<pre class="language-javascript"><code>var linear = function(delta, threshold) {
+	if (delta &gt;= threshold) return 1;
+	if (delta &lt;= -threshold) return 0;
+	return 0.5 * (delta/threshold + 1);
+};</code></pre>
+					<p>The simplest of all, this function simply transforms $x$ linearly, from its original range of $[-1,1]$, to $f(x)$ with a range of $[0,1]$. This is the default smoothing function (a misnomer, actually, since it is not smoothing anything) for cursor position.</p>
+				</li>
+				<li>
+					<h4 id="smoothing-function__tangent">Tangent</h4>
+					<div class="graph">
+						<div class="graph-plot" id="smoothing-function-plot__tangent"></div>
+						<div class="graph-equation">
+							$$
+							\begin{align}
+							y &= f(x) \\ &= \frac{1}{2} \left[\frac{\tan \left(0.351 \pi x \right)}{2} + 1 \right]
+							\end{align}
+							$$
+							$$\textrm{where } x = [-1,1] \textrm{ and } f(x) = [0,1]$$
+						</div>
+					</div>
+					<pre class="language-javascript"><code>var tangent = function(delta, threshold) {
+	if (delta &gt;= threshold) return 1;
+	if (delta &lt;= -threshold) return 0;
+	return 0.5 * (0.5 * Math.tan((delta/threshold) * (Math.PI * 0.351)) + 1);
+};</code></pre>
+					<p>This function transforms $x$ in the range of $[-1,1]$ via a tangent function. Since the transformation of the tangent curve is imprecise and only down to three decimal places, the range of $f(x)$ lies <em>approximately</em> between $[0,1]$.</p>
+				</li>
+				<li>
+					<h4 id="smoothing-function__cosine">Cosine</h4>
+					<div class="graph">
+						<div class="graph-plot" id="smoothing-function-plot__cosine"></div>
+						<div class="graph-equation">
+						$$
+						\begin{align}
+						y &= f(x) \\ &= \frac{1}{2} \left[ \sin\left(\frac{x}{2}\right) + 1 \right]
+						\end{align}
+						$$
+						$$\textrm{where } x = [-1,1] \textrm{ and } f(x) = [0,1]$$
+						</div>
+					</div>
+					<pre class="language-javascript"><code>var cosine = function(delta, threshold) {
+	if (delta &gt;= threshold) return 1;
+	if (delta &lt;= -threshold) return 0;
+	return 0.5 * (Math.sin((delta/threshold) * (Math.PI/2)) + 1);
+};</code></pre>
+					<p>This function transforms $x$ in the range of $[-1,1]$ via a cosine function. The output, $f(x)$, again lies in the range of $[0,1]$.</p>
+					</div>
+				</li>
+				<li>
+					<h4 id="smoothing-function__gaussian">Gaussian</h4>
+					<div class="graph">
+						<div class="graph-plot" id="smoothing-function-plot__gaussian"></div>
+						<div class="graph-equation">
+						$$
+						\begin{align}
+						y &= f(x)
+						\\ &= \frac{1}{\sigma \sqrt{2\pi}} \int_{-\infty}^x \! e^{-(x - \mu)^2/2\sigma^2} \textrm{d}x
+						\\ &= \frac{1}{2} \left[ \textrm{erf} \left( \frac{x - \mu}{\sigma \sqrt{2}} \right) + 1 \right]
+						\end{align}
+						$$
+						$$
+						\begin{align}
+						\textrm{where } & x = [-1,1] \textrm{ and } f(x) = [0,1]
+						\\ & \mu = 1 \textrm{ and } \sigma = 0.375
+						\end{align}
+						$$
+						</div>
+					</div>
+					<pre class="language-javascript"><code>var normalcdf = function(mean, sigma, to) {
+	var z = (to-mean)/Math.sqrt(2*sigma*sigma),
+		t = 1/(1+0.3275911*Math.abs(z)),
+		a1 =  0.254829592,
+		a2 = -0.284496736,
+		a3 =  1.421413741,
+		a4 = -1.453152027,
+		a5 =  1.061405429,
+		erf = 1-(((((a5*t + a4)*t) + a3)*t + a2)*t + a1)*t*Math.exp(-z*z),
+		sign = 1;
+	if(z &lt; 0) sign = -1;
+	return (1/2)*(1+sign*erf);
+};
+
+var gaussian = function(delta, threshold) {
+	if (delta &gt;= threshold) return 1;
+	if (delta &lt;= -threshold) return 0;
+	return normalcdf(0, 0.375, delta/threshold);
+}</code></pre>
+					<p>This function is a simplified equation of the cumulative distribution function of a normal distribution. This is the default smoothing function for device tilt angles, provided by the gyroscope (if present). Note that since the error function $\textrm{erf}()$ is <a href="http://en.wikipedia.org/wiki/Normal_distribution#Numerical_approximations_for_the_normal_CDF" title="Normal distribution - Wikipedia">simply an approximation</a> (code adapted from a <a href="http://stackoverflow.com/a/14873282/395910" title="std normal cdf, normal cdf, or error function">StackOverflow answer</a>), the range of $f(x)$ will only be accurate to at most 9 decimal points (which is more than sufficient, anyway).</p>
+					</p>
+				</li>
+			</ul>
+		</section>
+	</main>
+
+	<footer>
+		<a href="#" id="up" class="icon-font"></a>
+		<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 516 560" xml:space="preserve">
+			<g>
+				<polygon class="fill" points="0,0 0,158 165,158 258,306 351,158 516,158 516,0"></polygon>
+				<polygon class="fill" points="165,366 258,507 351,366 351,560 165,560"></polygon>
+			</g>
+		</svg>
+		<p>Code, design &amp; photos by <a href="http://terrymun.com/" title="Terry Mun">Terry Mun</a> &middot; 2015</p>
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/prism/0.0.1/prism.min.js"></script>
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+		<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+		<script type="text/javascript" src="./dist/js/functions.min.js"></script>
+		<script type="text/javascript">
+			$(function() {
+				// Math formulas
+				var smoothingFunction = {
+					linear: function(r) {
+						return 0.5 * (r + 1);
+					},
+					tangent: function(r) {
+						return 0.5 * (0.5*Math.tan(r * (Math.PI*0.351)) + 1);
+					},
+					cosine: function(r) {
+						return 0.5 * (Math.sin(r * (Math.PI/2)) + 1);
+					},
+					gaussian: function(r) {
+						var z = (r)/Math.sqrt(2*0.375*0.375);
+						var t = 1/(1+0.3275911*Math.abs(z));
+						var a1 =  0.254829592;
+						var a2 = -0.284496736;
+						var a3 =  1.421413741;
+						var a4 = -1.453152027;
+						var a5 =  1.061405429;
+						var erf = 1-(((((a5*t + a4)*t) + a3)*t + a2)*t + a1)*t*Math.exp(-z*z);
+						var sign = 1;
+						if(z < 0) sign = -1;
+						return 0.5 * (1+sign*erf);
+					}
+				};
+
+				// Graph dimensions
+				var m = [25,25,75,100],	// Margins
+					w = 800 - m[1] - m[3],	// Width
+					h = 500 - m[0] - m[2];	// Height
+
+				// Data points
+				var n = 100;
+
+				// Array of charts
+				var graphs = [{
+						id: 'linear'
+					}, {
+						id: 'tangent'
+					}, {
+						id: 'cosine'
+					}, {
+						id: 'gaussian'
+					}];
+
+				// Loop through all graphs
+				$.each(graphs, function(i,graph) {
+					var data = [],
+						smooth = smoothingFunction[graph.id];
+
+					for (var k = 0; k < n; k++) {
+						data.push({
+							x: (k/n * 2 - 1),
+							y: smooth(k/n * 2 - 1)
+						});
+					}
+
+					console.log(data);
+
+					// Map data
+					var dataX = data.map(function(d,i) { return parseFloat(d.x); }),
+						dataY = data.map(function(d,i) { return parseFloat(d.y); });
+
+					// Scale
+					var x = d3.scale.linear().domain([-1, 1]).range([0, w]),
+						y = d3.scale.linear().domain([0, 1]).range([h, 0]);
+
+					// Line
+					var line = d3.svg.line()
+						.x(function(d) { return x(parseFloat(d.x)); })
+						.y(function(d) { return y(parseFloat(d.y)); });
+
+					// Graph
+					var graph = d3.select('#smoothing-function-plot__'+graph.id)
+						.append('svg:svg')
+							.attr({
+								'viewBox': '0 0 ' + (w + m[1] + m[3]) + ' ' + (h + m[0] + m[2]),
+								'preserveAspectRatio': 'xMidYMid meet'
+							})
+						.append('svg:g')
+							.attr('transform', 'translate(' + m[3] + ',' + m[0] + ')');
+
+					// Draw grid lines
+					graph
+					.selectAll("line.x.major")
+						.data(x.ticks(4))
+						.enter()
+							.append("line")
+								.attr({
+									'class': 'x major',
+									'x1': x,
+									'x2': x,
+									'y1': 0,
+									'y2': h
+								});
+					graph
+					.selectAll("line.y.major")
+						.data(y.ticks(2))
+						.enter()
+							.append("line")
+								.attr({
+									'class': 'y major',
+									'x1': 0,
+									'x2': w,
+									'y1': y,
+									'y2': y
+								});
+
+					// Add middle line
+					graph
+					.append('svg:line')
+						.attr({
+							'class': 'horizontal middle-line',
+							'x1': 0,
+							'x2': 0.5 * w,
+							'y1': 0.5 * h,
+							'y2': 0.5 * h
+						});
+					graph
+					.append('svg:line')
+						.attr({
+							'class': 'vertical middle-line',
+							'x1': 0.5 * w,
+							'x2': 0.5 * w,
+							'y1': 0.5 * h,
+							'y2': h
+						});
+
+					// Add line to graph
+					graph
+					.append('svg:path')
+						.attr('d', line(data));
+
+					// Add center dot to graph
+					graph.append('svg:circle')
+						.attr({
+							'class': 'middle-dot',
+							'cx': 0.5 * (w),
+							'cy': 0.5 * (h),
+							'r': 10
+						});
+
+					// Create x and y axes
+					var xAxis = d3.svg.axis().scale(x).orient('bottom').ticks(3).tickValues([-1, 0, 1]),
+						yAxis = d3.svg.axis().scale(y).orient('left').ticks(2).tickValues([0.5,1]);
+
+					graph.append('svg:g')
+						.attr({
+							'class': 'x axis',
+							'transform': 'translate(0,' + h + ')'
+						})
+						.call(xAxis)
+					.append('svg:g')
+						.attr({
+							'class': 'y axis',
+							'transform': 'translate(0,-' + h + ')'
+						})
+						.call(yAxis);
+
+					// Add axis labels
+					graph.append('svg:text')
+						.attr({
+							'class': 'x label',
+							'text-anchor': 'middle',
+							'x': 0.5 * w,
+							'y': h + m[2]
+						})
+						.text('\u0394 from center as ratio to threshold');
+					graph.append('svg:text')
+						.attr({
+							'class': 'y label',
+							'text-anchor': 'middle',
+							'x': -0.5 * h,
+							'y': -(0.5 * m[3]) - 10,
+							'transform': 'rotate(-90)'
+						})
+						.text('Output ratio');
+					
+				});
+
+				// Mathjax
+				MathJax.Hub.Config({
+					"HTML-CSS": {
+						preferredFont: "TeX",
+						availableFonts: ["STIX","TeX"],
+						linebreaks: {
+							automatic: true
+						},
+						EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+					},
+					tex2jax: {
+						inlineMath: [
+							["$", "$"],
+							["\\\\(","\\\\)"]
+						],
+						displayMath: [
+							["$$","$$"],
+							["\\[", "\\]"]
+						],
+						processEscapes: true
+					},
+					TeX: {
+						noUndefined: {
+							attributes: {
+								mathcolor: "red",
+								mathbackground: "#FFEEEE",
+								mathsize: "90%"
+							}
+						},
+						Macros: {
+							href: "{}"
+						}
+					},
+					messageStyle: "none"
+				});
+
+			});
+		</script>
+	</footer>
+</body>
+</html>
