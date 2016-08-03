@@ -12,9 +12,12 @@
     <script src="js/jquery-throttle-debounce/jquery.ba-throttle-debounce.js" type="text/javascript"></script>
     <script src="js/paver/src/js/jquery.paver.js" type="text/javascript"></script>
     <link rel="stylesheet" href="js/paver/dist/css/paver.min.css" media="screen" title="no title" charset="utf-8">
+    <div>
+
+    </div>
     <h1>ciao</h1>
     <div class="panorama">
-        <img src="static/vineyard.jpg" alt="" title="" />
+        <img src="static/f.jpg" alt="" title="" />
     </div>
     <h1>ciao</h1>
     <div class="panorama">
@@ -23,6 +26,38 @@
 
     <script type="text/javascript">
         $(document).ready(function() {
+            defaults = {
+                // Failure message settings
+                failureMessage: 'Scroll left/right to pan through panorama.',
+                failureMessageInsert: 'after',
+                gracefulFailure: true,
+
+                // Display settings
+                meta: false,
+                responsive: true,
+                startPosition: 0.5,
+
+                // Minimum overflow before panorama gets converted into a Paver instance
+                minimumOverflow: 200,
+
+                // Performance
+                grain: 3,
+                cursorThrottle: (1000/60),
+                gyroscopeThrottle: (1000/60),
+                resizeThrottle: 500,
+
+                // For mousemove event
+                mouseSmoothingFunction: 'linear',
+
+                // For deviceOrientationEvent
+                tilt: true,
+                tiltSensitivity: 0.1,
+                tiltScrollerPersistence: 500,
+                tiltSmoothingFunction: 'gaussian',
+                tiltThresholdPortrait: 12,
+                tiltThresholdLandscape: 24
+            };
+
             $(function() {
                 $('div.panorama').paver();
             });
