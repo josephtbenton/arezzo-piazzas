@@ -1,8 +1,44 @@
 .panorama {
     height: 700px;
-    overflow-x: scroll;
+    overflow-x: hidden;
     overflow-y: hidden;
     img {
         height: 100%;
     }
+}
+
+.shadow {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+
+}
+
+
+h1 {
+    font-family: Baskerville;
+    text-align: center;
+    color: 	#404040;
+}
+
+h4 {
+    font-family: Baskerville;
+    color: 	#404040;
+}
+h2 {
+    font-family: Baskerville;
+    text-align: center;
+    color: 	#404040;
+}
+
+h3 {
+    font-family: Baskerville;
+    text-align: center;
+    color: 	#404040;
+}
+
+body {
+    background-color: #FFFFE6;
+}
+
+.well {
+    background: #EBEBD2 !important;
 }
